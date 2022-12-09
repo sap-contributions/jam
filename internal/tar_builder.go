@@ -25,6 +25,15 @@ func NewTarBuilder(logger scribe.Logger) TarBuilder {
 
 func (b TarBuilder) Build(path string, files []File) error {
 	b.logger.Process("Building tarball: %s", path)
+
+	destDir := filepath.Dir(path)
+	if _, err := os.Stat(destDir); os.IsNotExist(err) {
+		err = os.MkdirAll(destDir, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to create tarball: %s", err)

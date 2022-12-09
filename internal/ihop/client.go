@@ -402,6 +402,14 @@ func (c Client) Export(path string, images ...Image) error {
 		}
 	}
 
+	destDir := filepath.Dir(path)
+	if _, err = os.Stat(destDir); os.IsNotExist(err) {
+		err = os.MkdirAll(destDir, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
 	file, err := os.Create(path)
 	if err != nil {
 		return err
